@@ -2,6 +2,7 @@ package com.elchinaliyev.test.Model.Dao;
 
 import android.content.Context;
 
+import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.Model.Education;
 import com.elchinaliyev.test.Model.Experiance;
@@ -13,7 +14,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Contact.class, Education.class, Experiance.class, Language.class, Project.class, Skills.class},version = 2,exportSchema = false)
+@Database(entities = {Contact.class, Education.class, Experiance.class, Language.class, Project.class, Skills.class, Certificate.class},version = 5,exportSchema = false)
 public abstract class CvDatabase extends RoomDatabase {
     public static CvDatabase instance;
 
@@ -29,4 +30,10 @@ public abstract class CvDatabase extends RoomDatabase {
     }
 
     public abstract contactDao contactDao();
+    public abstract skillDao skillDao();
+    public abstract eduDao eduDao();
+    public abstract experDao experDao();
+    public abstract lanuageDao langDao();
+    public abstract projectDao projectDao();
+    public abstract certificateDao certDao();
 }

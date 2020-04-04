@@ -1,23 +1,33 @@
 package com.elchinaliyev.test.Report;
 
 import android.content.Context;
+
+import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.Contact;
+import com.elchinaliyev.test.Model.ContactWithDetail;
+import com.elchinaliyev.test.Model.Education;
+import com.elchinaliyev.test.Model.Experiance;
+import com.elchinaliyev.test.Model.Project;
+import com.elchinaliyev.test.Model.Skills;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CV extends BaseReport {
     Context context;
-    Contact contact;
+    ContactWithDetail all;
 
-    public CV(Context context, Contact contact) throws IOException, DocumentException {
+    public CV(Context context, ContactWithDetail all) throws IOException, DocumentException {
         this.context = context;
-        this.contact=contact;
+        this.all=all;
     }
 
     @Override
@@ -31,7 +41,8 @@ public class CV extends BaseReport {
             tabName.setWidths(new int[]{200, 40});
             tabName.setWidthPercentage(100);
             tabName.getDefaultCell().setBorder(2);
-            PdfPCell cellName = GetDefaultCell(GetDefaultParagraph(contact.getFirstName()+" "+contact.getLastName(), ""), 1, 1);
+            tabName.getDefaultCell().setPaddingLeft(0);
+            PdfPCell cellName = GetDefaultCell(GetDefaultParagraph(all.contact.getFirstName()+" "+all.contact.getLastName(), ""), 1, 1);
             cellName.setHorizontalAlignment(Element.ALIGN_LEFT);
             cellName.setPaddingLeft(0);
             tabName.addCell(cellName);
@@ -43,7 +54,7 @@ public class CV extends BaseReport {
             imgTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
 
 
-            Image image = Image.getInstance(contact.getImage());
+            Image image = Image.getInstance(all.contact.getImage());
             PdfPCell cellPhoto = new PdfPCell();
             cellPhoto.setFixedHeight(70);
             cellPhoto.setBorder(0);
@@ -52,12 +63,12 @@ public class CV extends BaseReport {
             cellPhotoBasic.addElement(imgTable);
             tabName.addCell(cellPhotoBasic);
 
-            PdfPCell cellPos = GetDefaultCell(GetDefaultParagraph("", contact.getOccupation()), 1, 1);
+            PdfPCell cellPos = GetDefaultCell(GetDefaultParagraph("", all.contact.getOccupation()), 1, 1);
             cellPos.setHorizontalAlignment(Element.ALIGN_LEFT);
             cellPos.setPaddingLeft(0);
             tabName.addCell(cellPos);
 
-            PdfPCell cellDesc = GetDefaultCell(GetDefaultParagraph("", contact.getDescription()), 1, 1);
+            PdfPCell cellDesc = GetDefaultCell(GetDefaultParagraph("", all.contact.getDescription()), 1, 1);
             cellDesc.setHorizontalAlignment(Element.ALIGN_LEFT);
             cellDesc.setPaddingLeft(0);
             cellDesc.setBorder(2);
@@ -75,21 +86,30 @@ public class CV extends BaseReport {
             cellExperHeader.setHorizontalAlignment(Element.ALIGN_LEFT);
             cellExperHeader.setPaddingLeft(0);
             tabExper.addCell(cellExperHeader);
+            for (Experiance exper : all.experiances) {
+                String end="";
+                if(exper.isWork())
+                {
+                  end="Present";
+                }
+                else
+                {
+                    end=ConvertDate(exper.getEndDate());
+                }
+                //experPlaceDate
+                _cell = GetDefaultCell(GetDefaultParagraph(exper.getLocation(), "\n\n"+ConvertDate(exper.getStartDate())+" - "+end), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabExper.addCell(_cell);
 
-            //experPlaceDate
-            _cell = GetDefaultCell(GetDefaultParagraph("Azerbaijan,Baku", "\nOct 2014-Sept 2015"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabExper.addCell(_cell);
-
-            //experPositionCompany
-            _cell = GetDefaultCell(GetDefaultParagraph("Development Operation Centre Engineer", "\nHuawei /Azertelecom"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabExper.addCell(_cell);
+                //experPositionCompany
+                _cell = GetDefaultCell(GetDefaultParagraph(exper.getPosition(), "\n\n"+exper.getCompany()), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabExper.addCell(_cell);
+            }
             cellExper.addElement(tabExper);
             tabName.addCell(cellExper);
-
 
             //Education
             PdfPCell cellEdu = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
@@ -104,47 +124,20 @@ public class CV extends BaseReport {
             cellEduHeader.setPaddingLeft(0);
             tabEdu.addCell(cellEduHeader);
 
-            //eduPlaceDate
-            _cell = GetDefaultCell(GetDefaultParagraph("Azerbaijan,Baku", "\n2011"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
+            for (Education edu:all.educations) {
+                //eduPlaceDate
+                _cell = GetDefaultCell(GetDefaultParagraph(edu.getLocation(), "\n\n"+edu.getEndDate()), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabEdu.addCell(_cell);
 
-            //eduPositionUni
-            _cell = GetDefaultCell(GetDefaultParagraph("Bachelor of  Management", "\nHAzerbaijan State Oil Academy"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
+                //eduPositionUni
+                _cell = GetDefaultCell(GetDefaultParagraph(edu.getSpecialty(), "\n\n"+edu.getUniversity()), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabEdu.addCell(_cell);
+            }
             cellEdu.addElement(tabEdu);
-
-
-            //eduPlaceDate
-            _cell = GetDefaultCell(GetDefaultParagraph("Azerbaijan,Baku", "\n2011"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
-
-            //eduPositionUni
-            _cell = GetDefaultCell(GetDefaultParagraph("Bachelor of  Management", "\nHAzerbaijan State Oil Academy"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
-            cellEdu.addElement(tabEdu);
-
-            //eduPlaceDate
-            _cell = GetDefaultCell(GetDefaultParagraph("Azerbaijan,Baku", "\n2011"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
-
-            //eduPositionUni
-            _cell = GetDefaultCell(GetDefaultParagraph("Bachelor of  Management", "\nHAzerbaijan State Oil Academy"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabEdu.addCell(_cell);
-            cellEdu.addElement(tabEdu);
-
-
             tabName.addCell(cellEdu);
 
 
@@ -162,10 +155,12 @@ public class CV extends BaseReport {
             tabCert.addCell(cellCertHeader);
 
             //Certification
-            _cell = GetDefaultCell(GetDefaultParagraph("Microsoft MCSP(Programming in C#)", ""), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabCert.addCell(_cell);
+            for(Certificate cert:all.certs) {
+                _cell = GetDefaultCell(GetDefaultParagraph(cert.getName(), ""), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabCert.addCell(_cell);
+            }
 
             cellCert.addElement(tabCert);
             tabName.addCell(cellCert);
@@ -185,16 +180,14 @@ public class CV extends BaseReport {
             cellProHeader.setPaddingLeft(0);
             tabPro.addCell(cellProHeader);
 
-
-            _cell = GetDefaultCell(GetDefaultParagraph("Microsoft MCSP(Programming in C#)", "DELIVERY,HRdkdlak;ldak sfksfskfl;skfls;"), 1, 1);
-            _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            _cell.setPaddingLeft(0);
-            tabPro.addCell(_cell);
-
+            for (Project project : all.projects) {
+                _cell = GetDefaultCell(GetDefaultParagraph(project.getName(), ""), 1, 1);
+                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                _cell.setPaddingLeft(0);
+                tabPro.addCell(_cell);
+            }
             cellPro.addElement(tabPro);
             tabName.addCell(cellPro);
-
-
             _cell.addElement(tabName);
             tab.addCell(_cell);
 
@@ -202,21 +195,22 @@ public class CV extends BaseReport {
             //Left
             PdfPCell celLeft = GetDefaultCell(GetDefaultParagraph("", ""), 1, 1);
             celLeft.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            celLeft.setMinimumHeight(PageSize.A4.getHeight());
             PdfPTable tabContact = new PdfPTable(1);
             tabContact.setWidthPercentage(100);
             _cell = GetDefaultCell(GetDefaultParagraph("Contact Information", ""), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("\nEMAIL\n", contact.getEmail()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("\nEMAIL\n", all.contact.getEmail()), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("Address\n", contact.getAddress()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("Address\n", all.contact.getAddress()), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("Phone\n", contact.getPhone()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("Phone\n", all.contact.getPhone()), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("Date of Birth\n", contact.getBirthDate()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("Date of Birth\n", all.contact.getBirthDate()), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("Nationality\n", contact.getNationality()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("Nationality\n", all.contact.getNationality()), 1, 1);
             tabContact.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("Sosial media\n", contact.getSosialMedia()), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("Sosial media\n", all.contact.getSosialMedia()), 1, 1);
             tabContact.addCell(_cell);
             celLeft.addElement(tabContact);
 
@@ -224,13 +218,16 @@ public class CV extends BaseReport {
 
             PdfPTable tabSkill = new PdfPTable(1);
             tabSkill.setWidthPercentage(100);
-            _cell = GetDefaultCell(GetDefaultParagraph("SKILLS", ""), 1, 1);
+            _cell = GetDefaultCell(GetDefaultParagraph("SKILLS\n", ""), 1, 1);
             _cell.setBorder(2);
             _cell.setPaddingTop(10);
             _cell.setPaddingBottom(10);
             tabSkill.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("\nC# Programming", ""), 1, 1);
-            tabSkill.addCell(_cell);
+            for (Skills skill:all.skills) {
+                _cell = GetDefaultCell(GetDefaultParagraph(skill.getName(), ""), 1, 1);
+                tabSkill.addCell(_cell);
+            }
+
             celLeft.addElement(tabSkill);
 
 
@@ -261,6 +258,12 @@ public class CV extends BaseReport {
             e.printStackTrace();
         }
 
+    }
+
+    private String ConvertDate(String dat)
+    {
+        SimpleDateFormat format = new SimpleDateFormat("MMM yyyy");
+        return  format.format(Date.parse(dat));
     }
 
 }

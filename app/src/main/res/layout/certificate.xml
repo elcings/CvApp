@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_height="60dp">
+
+    <EditText
+        android:id="@+id/certName"
+        android:layout_width="0dp"
+        android:layout_weight="5"
+        android:layout_height="wrap_content"
+        android:hint="Certificate or Course"
+        android:inputType="text" />
+    <Button
+        android:id="@+id/delCert"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="0.5"
+        android:onClick="onDelCert"
+        android:background="@drawable/ic_clear_black"
+        />
+</LinearLayout>

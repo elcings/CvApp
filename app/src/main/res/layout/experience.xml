@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/delExper"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_weight="0.5"
+        android:onClick="onDelExper"
+        android:background="@drawable/ic_clear_black"
+        />
+    <EditText
+        android:id="@+id/title_position"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/delEdu"
+        android:layout_height="wrap_content"
+        android:hint="Titles/Position"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/company"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/title_position"
+        android:layout_height="wrap_content"
+        android:hint="Company"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/comp_location"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/company"
+        android:layout_height="wrap_content"
+        android:hint="Location(State/City)"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/workStartDate"
+        android:onClick="onWorkStartDate"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/comp_location"
+        android:layout_height="wrap_content"
+        android:hint="Start Date"
+        />
+    <EditText
+        android:id="@+id/workEndDate"
+        android:onClick="onWorkEndDate"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/workStartDate"
+        android:layout_height="wrap_content"
+        android:hint="End Date"
+        />
+    <CheckBox
+        android:id="@+id/isWork"
+        android:text="I'm in this job right now"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/workEndDate"/>
+
+</RelativeLayout>

@@ -15,7 +15,7 @@ public class Education {
     private int id;
 
     private int contactId;
-    private String degree;
+    private String specialty;
     private String university;
     private String location;
     private String endDate;
@@ -38,12 +38,12 @@ public class Education {
         this.contactId = contactId;
     }
 
-    public String getDegree() {
-        return degree;
+    public String getSpecialty() {
+        return specialty;
     }
 
-    public void setDegree(String degree) {
-        this.degree = degree;
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
     }
 
     public String getUniversity() {

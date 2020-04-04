@@ -15,8 +15,23 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 @Dao
-public interface contactDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+public abstract class contactDao implements BaseDao<Contact> {
+
+
+    @Query("SELECT * FROM contact WHERE id > :id")
+    public abstract Contact getById(int id);
+
+    @Query("SELECT id FROM contact order by id DESC limit 1")
+    public abstract int getTopId();
+
+    @Query("SELECT * FROM contact")
+    public abstract LiveData<List<Contact>> getAllContacts();
+
+    @Transaction
+    @Query("SELECT * FROM contact where id=:contactId")
+    public abstract ContactWithDetail getContactWithDetailById(int contactId);
+
+   /* @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Contact contact);
     @Update
     void update(Contact contact);
@@ -25,12 +40,12 @@ public interface contactDao {
     @Query("DELETE FROM contact")
     void deleteAllContact();
     @Query("SELECT * FROM contact WHERE id > :id")
-    LiveData<Contact> getById(int id);
-    @Query("SELECT * FROM contact")
-    LiveData<List<Contact>> getAllContact();
+    Contact getById(int id);
     @Query("SELECT id FROM contact order by id DESC limit 1")
-    LiveData<Integer> getTopId();
-    @Transaction
+    int getTopId();
     @Query("SELECT * FROM contact")
-    public LiveData<List<ContactWithDetail>> getContactWithDetail();
+    LiveData<List<Contact>>getAllContacts();
+    @Transaction
+    @Query("SELECT * FROM contact where id=:contactId")
+    ContactWithDetail getContactWithDetailById(int contactId);*/
 }

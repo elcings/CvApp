@@ -22,11 +22,13 @@ public class Contact {
     private String email;
     private String sosialMedia;
     private String description;
+    private String path;
 
 
 
     public Contact() {
     }
+
 
     public int getId() {
         return id;
@@ -35,6 +37,14 @@ public class Contact {
     public void setId(int id) {
         this.id = id;
     }
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 
     public byte[] getImage() {
         return image;

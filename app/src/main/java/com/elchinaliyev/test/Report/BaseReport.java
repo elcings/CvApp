@@ -29,9 +29,9 @@ public abstract class BaseReport {
         bf = BaseFont.createFont(BaseFont.HELVETICA_BOLD,BaseFont.WINANSI,BaseFont.EMBEDDED);
         headerFont = new Font(bf, 16, Font.BOLD);
         bFont = new Font(bf, 10, Font.NORMAL);
-        font = new Font(bf, 8, Font.NORMAL);
+        font = new Font(bf, 9, Font.NORMAL);
         italicFont = new Font(bf, 8, Font.ITALIC);
-        document.setMargins(0, 0, 50f, 20f);
+        document.setMargins(10f, 10f, 50f, 20f);
     }
 
     public abstract void AddBody();

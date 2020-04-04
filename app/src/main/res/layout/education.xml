@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content">
+       <Button
+           android:id="@+id/delEdu"
+           android:layout_alignParentTop="true"
+           android:layout_alignParentRight="true"
+           android:layout_width="40dp"
+           android:layout_height="40dp"
+           android:layout_weight="0.5"
+           android:onClick="onDelEdu"
+           android:background="@drawable/ic_clear_black"
+           />
+    <EditText
+        android:id="@+id/specialty"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/delEdu"
+        android:layout_height="wrap_content"
+        android:hint="Specialty"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/university"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/specialty"
+        android:layout_height="wrap_content"
+        android:hint="University"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/university"
+        android:layout_height="wrap_content"
+        android:hint="Location"
+        android:inputType="text" />
+    <EditText
+        android:id="@+id/graduated"
+        android:layout_width="match_parent"
+        android:inputType="number"
+        android:layout_below="@+id/location"
+        android:layout_height="wrap_content"
+        android:hint="Graduated year"
+      />
+
+</RelativeLayout>
