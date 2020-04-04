@@ -1,30 +1,34 @@
-package com.elchinaliyev.test.Model.Repository;
+package com.elchinaliyev.test.Repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
 
 import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.Model.ContactWithDetail;
-import com.elchinaliyev.test.Model.Dao.CvDatabase;
+import com.elchinaliyev.test.DataBase.CvDatabase;
 import com.elchinaliyev.test.Model.Dao.contactDao;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import androidx.lifecycle.LiveData;
 
 public class ContactRepository {
     private contactDao contactDao;
     private LiveData<List<Contact>> contacts;
+    private ExecutorService executorService;
 
     public ContactRepository(Application app) {
         CvDatabase db = CvDatabase.getInstance(app);
         contactDao = db.contactDao();
-        contacts=contactDao.getAllContacts();
+        contacts = contactDao.getAllContacts();
     }
 
-    public LiveData<List<Contact>>getAllContacts() {
-       return contacts;
+    public LiveData<List<Contact>> getAllContacts() {
+        return contacts;
     }
 
 
@@ -40,7 +44,7 @@ public class ContactRepository {
         return contactWithDetail;
     }
 
-    public Contact getById(int id) {
+    /*public Contact getById(int id) {
         Contact contact = null;
         try {
             contact = new GetByIdAsyncTask(contactDao).execute(id).get();
@@ -50,9 +54,9 @@ public class ContactRepository {
             e.printStackTrace();
         }
         return contact;
-    }
+    }*/
 
-    public int getTopId() {
+    public int getId() {
         int contactId = 0;
         try {
             contactId = new GetTopOneAsyncTask(contactDao).execute().get();
@@ -64,19 +68,17 @@ public class ContactRepository {
         return contactId;
     }
 
-    public void Insert(Contact contact) {
-        new InsertAsyncTask(contactDao).execute(contact);
-    }
 
-    public void Update(Contact contact) {
-        new UpdateAsyncTask(contactDao).execute(contact);
+    public void save(Contact contact) {
+        if (contact.getId() == 0) {
+            new InsertAsyncTask(contactDao).execute(contact);
+        } else {
+            new UpdateAsyncTask(contactDao).execute(contact);
+        }
     }
 
     public void Delete(Contact contact) {
         new DeleteAsyncTask(contactDao).execute(contact);
-    }
-    public void DeleteAllContact() {
-        new DeleteAllAsyncTask(contactDao).execute();
     }
 
     private static class InsertAsyncTask extends AsyncTask<Contact, Void, Void> {
@@ -162,7 +164,7 @@ public class ContactRepository {
         }
     }
 
-    private static class DeleteAllAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class DeleteAllAsyncTask extends AsyncTask<Contact, Void, Void> {
         private contactDao contactDao;
 
         private DeleteAllAsyncTask(contactDao contactDao) {
@@ -170,8 +172,8 @@ public class ContactRepository {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            contactDao.delete();
+        protected Void doInBackground(Contact... contacts) {
+            contactDao.delete(contacts[0]);
             return null;
         }
     }

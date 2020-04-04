@@ -1,9 +1,16 @@
-package com.elchinaliyev.test.Model.Dao;
+package com.elchinaliyev.test.DataBase;
 
 import android.content.Context;
 
 import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.Contact;
+import com.elchinaliyev.test.Model.Dao.certificateDao;
+import com.elchinaliyev.test.Model.Dao.contactDao;
+import com.elchinaliyev.test.Model.Dao.eduDao;
+import com.elchinaliyev.test.Model.Dao.experDao;
+import com.elchinaliyev.test.Model.Dao.lanuageDao;
+import com.elchinaliyev.test.Model.Dao.projectDao;
+import com.elchinaliyev.test.Model.Dao.skillDao;
 import com.elchinaliyev.test.Model.Education;
 import com.elchinaliyev.test.Model.Experiance;
 import com.elchinaliyev.test.Model.Language;

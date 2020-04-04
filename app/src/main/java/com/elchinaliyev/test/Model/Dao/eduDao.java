@@ -11,17 +11,11 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 @Dao
-public interface eduDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Education education);
-    @Insert
-    void  insertAll(List<Education> educations);
-    @Update
-    void update(Education education);
-    @Query("Select * from education")
-    List<Education>getAllEdu();
+public abstract class eduDao implements BaseDao<Education>{
+
     @Query("DELETE from education")
-    void deleteAllEdu();
+    public abstract void deleteAllEdu();
+
     @Query("DELETE FROM education where contactId=:contactId")
-    void delete(int contactId);
+    public abstract void deleteByConId(int contactId);
 }

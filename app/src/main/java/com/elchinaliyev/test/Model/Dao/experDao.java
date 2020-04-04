@@ -13,17 +13,8 @@ import androidx.room.Update;
 
 
 @Dao
-public interface experDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Experiance exper);
-    @Insert
-    void  insertAll(List<Experiance> exper);
-    @Update
-    void update(Experiance exper);
-    @Query("Select * from experiance")
-    List<Experiance>getAllExpers();
-    @Query("DELETE from experiance")
-    void deleteExpers();
+public abstract class experDao implements BaseDao<Experiance> {
+
     @Query("DELETE FROM experiance where contactId=:contactId")
-    void delete(int contactId);
+    public abstract void deleteByConId(int contactId);
 }

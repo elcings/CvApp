@@ -1,7 +1,6 @@
 package com.elchinaliyev.test.ViewModel;
 
 import android.app.Application;
-import android.app.ListActivity;
 
 import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.Contact;
@@ -10,17 +9,16 @@ import com.elchinaliyev.test.Model.Education;
 import com.elchinaliyev.test.Model.Experiance;
 import com.elchinaliyev.test.Model.Language;
 import com.elchinaliyev.test.Model.Project;
-import com.elchinaliyev.test.Model.Repository.CertRepository;
-import com.elchinaliyev.test.Model.Repository.ContactRepository;
-import com.elchinaliyev.test.Model.Repository.EduRepository;
-import com.elchinaliyev.test.Model.Repository.ExperRepository;
-import com.elchinaliyev.test.Model.Repository.LangRepository;
-import com.elchinaliyev.test.Model.Repository.ProjectRepository;
-import com.elchinaliyev.test.Model.Repository.SkillRepository;
+import com.elchinaliyev.test.Repository.CertRepository;
+import com.elchinaliyev.test.Repository.ContactRepository;
+import com.elchinaliyev.test.Repository.EduRepository;
+import com.elchinaliyev.test.Repository.ExperRepository;
+import com.elchinaliyev.test.Repository.LangRepository;
+import com.elchinaliyev.test.Repository.ProjectRepository;
+import com.elchinaliyev.test.Repository.SkillRepository;
 import com.elchinaliyev.test.Model.Skills;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -39,134 +37,114 @@ public class CvViewModel extends AndroidViewModel {
     public CvViewModel(@NonNull Application application) {
         super(application);
         contactRepository = new ContactRepository(application);
-        skillRepository=new SkillRepository(application);
-        eduRepository=new EduRepository(application);
-        experRepository=new ExperRepository(application);
-        langRepository=new LangRepository(application);
-        projectRepository=new ProjectRepository(application);
-        certRepository=new CertRepository(application);
-        contactAll=contactRepository.getAllContacts();
+        skillRepository = new SkillRepository(application);
+        eduRepository = new EduRepository(application);
+        experRepository = new ExperRepository(application);
+        langRepository = new LangRepository(application);
+        projectRepository = new ProjectRepository(application);
+        certRepository = new CertRepository(application);
+        contactAll = contactRepository.getAllContacts();
     }
 
 
     public ContactWithDetail getContactWithDetail(int contactId) {
         return contactRepository.getContactWithDetail(contactId);
     }
-   //contact
-    public int getTopOneId() {
-        return contactRepository.getTopId();
+
+    //contact
+    public int getConId() {
+        return contactRepository.getId();
     }
-    public LiveData<List<Contact>> getAllContacts() {
+
+    public LiveData<List<Contact>> getContacts() {
         return contactAll;
     }
-    public Contact getById(int id){
+
+    /*public Contact getById(int id) {
         return contactRepository.getById(id);
+    }*/
+
+    public void saveCon(Contact contact) {
+        contactRepository.save(contact);
     }
-    public void insert(Contact contact) {
-        contactRepository.Insert(contact);
-    }
-    public void upadte(Contact contact) {
-        contactRepository.Update(contact);
-    }
+
     public void delete(Contact contact) {
         contactRepository.Delete(contact);
-    }
-    public void deleteAllContact() {
-        contactRepository.DeleteAllContact();
     }
 
     //skill
 
-    public List<Skills> getAllSkills() { return skillRepository.getAllSkills();}
-    public void insertSkill(Skills skills) {  skillRepository.insert(skills);}
-    public void insertAllSkill(List<Skills> skills) {
-        skillRepository.insertAll(skills);
+    public void saveSkill(List<Skills> skills) {
+        for (Skills skill : skills) {
+            skillRepository.save(skill);
+        }
     }
-    public void upadteSkill(Skills skills) {
-        skillRepository.update(skills);
-    }
-    public void deleteSkill(int contactId) {
-        skillRepository.delete(contactId);
-    }
-    public void deleteAllSkill() {
-        skillRepository.deleteAllSkill();
+
+    public void deleteSkillByConId(int contactId) {
+        skillRepository.deleteByConId(contactId);
     }
 
 
     //education
 
+    public void saveEdu(List<Education> educations) {
+        for (Education edu : educations) {
+            eduRepository.save(edu);
+        }
+    }
 
-    public List<Education> getAllEdu() { return eduRepository.getAllEdu();}
-    public void insertEdu(Education education) {  eduRepository.insert(education);}
-    public void insertAllEdu(List<Education> educations) {
-        eduRepository.insertAll(educations);
-    }
-    public void upadteEdu(Education education) {
-        eduRepository.update(education);
-    }
-    public void deleteEdu(int contactId) {
+    public void deleteEduByConId(int contactId) {
         eduRepository.delete(contactId);
-    }
-    public void deleteAllEdu() {
-        eduRepository.deleteAllEdu();
     }
 
     //experience
 
-    public List<Experiance> getAllExper() { return experRepository.getAllExpers();}
-    public void insertExper(Experiance exper) {  experRepository.insert(exper);}
-    public void insertAllEper(List<Experiance> expers) {
-        experRepository.insertAll(expers);
+    public void saveEper(List<Experiance> expers) {
+        for (Experiance exper : expers) {
+            experRepository.save(exper);
+        }
     }
-    public void upadteExper(Experiance exper) {
-        experRepository.update(exper);
-    }
+
     public void deleteExper(int contactId) {
-        experRepository.delete(contactId);
-    }
-    public void deleteAllExper() {
-        experRepository.deleteAllExpers();
+        experRepository.deleteById(contactId);
     }
 
 
     //language
 
-    public List<Language> getAllLang() { return langRepository.getAllLangs();}
-    public void insertAllLang(List<Language> expers) {
-        langRepository.insertAll(expers);
-    }
-    public void deleteLangs(int contactId) {
-        langRepository.delete(contactId);
-    }
-    public void deleteAlllang() {
-        langRepository.deleteAllLangs();
+    public void saveLang(List<Language> langs) {
+        for (Language lang : langs) {
+            langRepository.save(lang);
+        }
     }
 
+    public void deleteLangByConId(int contactId) {
+        langRepository.deleteByConId(contactId);
+    }
 
 
     //project
-    public List<Project> getAllProject() { return projectRepository.getAllprojects();}
-    public void insertAllProjects(List<Project> expers) {
-        projectRepository.insertAll(expers);
+
+    public void saveProjects(List<Project> projects) {
+        for (Project pro : projects) {
+            projectRepository.save(pro);
+        }
     }
-    public void deleteProject(int contactId) {
-        projectRepository.delete(contactId);
-    }
-    public void deleteAllProjects() {
-        projectRepository.deleteAllPros();
+
+    public void deleteProjectByConId(int contactId) {
+        projectRepository.deleteByConId(contactId);
     }
 
     //certificate
 
-    public List<Certificate> getAllCert() { return certRepository.getAllCerts();}
-    public void insertAllCerts(List<Certificate> expers) {
-        certRepository.insertAll(expers);
+    public void saveCert(List<Certificate> certs) {
+        for (Certificate cert : certs) {
+            certRepository.save(cert);
+        }
     }
-    public void deletecerts(int contactId) {
-        certRepository.delete(contactId);
-    }
-    public void deleteAllCerts() {
-        certRepository.deleteAllLangs();
+
+    public void deleteCertConById(int contactId) {
+        certRepository.deleteByConId(contactId);
     }
 
 }
