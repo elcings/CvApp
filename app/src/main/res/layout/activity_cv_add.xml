@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CvAddActivity">
+    tools:context=".Activity.CvAddActivity">
     <LinearLayout
         android:id="@+id/contactRelative"
         android:layout_width="match_parent"
@@ -160,59 +160,7 @@
                 android:hint="Description"
                 android:inputType="textMultiLine"/>
         </com.google.android.material.textfield.TextInputLayout>
-<TextView
-    android:textSize="20sp"
-    android:text="Skills"
-    android:drawableRight="@drawable/ic_down"
-    android:onClick="expandSkill"
-    android:background="?attr/selectableItemBackground"
-    android:textStyle="bold"
-    android:gravity="center_horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
-        <LinearLayout
-    android:id="@+id/parent_linear_layout"
-    android:orientation="vertical"
-    android:visibility="gone"
-    android:layout_marginTop="5dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
 
-
-                <EditText
-                    android:id="@+id/skillName"
-                    android:layout_width="0dp"
-                    android:layout_weight="5"
-                    android:layout_marginTop="5dp"
-                    android:layout_height="wrap_content"
-                    android:hint="Skill"
-                    android:inputType="text" />
-
-            <Button
-                android:id="@+id/delSkill"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:onClick="onDelSkill"
-                android:layout_weight="0.5"
-                android:background="@drawable/ic_clear_black"
-                />
-        </LinearLayout>
-    <Button
-        android:id="@+id/addSkill"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="right|end"
-        android:onClick="onAddSkill"
-        android:background="@drawable/ic_add"
-        />
-
-</LinearLayout>
 
         <TextView
             android:textSize="20sp"
@@ -226,69 +174,72 @@
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <LinearLayout
-        android:id="@+id/parent_edu_layout"
-        android:orientation="vertical"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/delEdu"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:onClick="onDelEdu"
-            android:background="@drawable/ic_clear_black"
-            />
-        <EditText
-            android:id="@+id/specialty"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/delEdu"
-            android:layout_height="wrap_content"
-            android:hint="Specialty"
-            android:inputType="text" />
-        <EditText
-            android:id="@+id/university"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/specialty"
-            android:layout_height="wrap_content"
-            android:hint="University"
-            android:inputType="text" />
-        <EditText
-            android:id="@+id/location"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/university"
-            android:layout_height="wrap_content"
-            android:hint="Location"
-            android:inputType="text" />
-        <EditText
-            android:id="@+id/graduated"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/location"
-            android:layout_height="wrap_content"
-            android:hint="Graduated year"
-            />
 
-</RelativeLayout>
+        <LinearLayout
+            android:id="@+id/parent_edu_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/delEdu"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/ic_clear_black"
+                    android:onClick="onDelEdu" />
+
+                <EditText
+                    android:id="@+id/specialty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/delEdu"
+                    android:hint="Specialty"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/university"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/specialty"
+                    android:hint="University"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/university"
+                    android:hint="Location"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/graduated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/location"
+                    android:hint="Graduated year"
+                    android:inputType="number" />
+
+            </RelativeLayout>
         <Button
             android:id="@+id/addEdu"
             android:layout_width="50dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            android:layout_gravity="right|end"
+            android:layout_gravity="left|end"
             android:onClick="onAddEdu"
             android:background="@drawable/ic_add"
             />
     </LinearLayout>
-
 
         <TextView
             android:textSize="20sp"
@@ -374,14 +325,11 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
-                android:layout_gravity="right|end"
+                android:layout_gravity="left|end"
                 android:onClick="onAddExper"
                 android:background="@drawable/ic_add"
                 />
         </LinearLayout>
-
-
-
 
         <TextView
             android:textSize="20sp"
@@ -435,10 +383,119 @@
                 android:background="@drawable/ic_add"
                 />
         </LinearLayout>
+        <TextView
+            android:textSize="20sp"
+            android:text="Skills"
+            android:drawableRight="@drawable/ic_down"
+            android:onClick="expandSkill"
+            android:background="?attr/selectableItemBackground"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
+        <LinearLayout
+            android:id="@+id/parent_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
+                <EditText
+                    android:id="@+id/skillName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="5"
+                    android:hint="Skill"
+                    android:inputType="text" />
 
+                <Button
+                    android:id="@+id/delSkill"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:onClick="onDelSkill"
+                    android:layout_weight="0.5"
+                    android:background="@drawable/ic_clear_black"
+                    />
+            </LinearLayout>
+            <Button
+                android:id="@+id/addSkill"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="left|end"
+                android:onClick="onAddSkill"
+                android:background="@drawable/ic_add"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:textSize="20sp"
+            android:text="Languages"
+            android:drawableRight="@drawable/ic_down"
+            android:onClick="expandLang"
+            android:background="?attr/selectableItemBackground"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:id="@+id/parent_lang_layout"
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/delLang"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="0.5"
+                    android:onClick="onDelLang"
+                    android:background="@drawable/ic_clear_black"
+                    />
+                <EditText
+                    android:id="@+id/langName"
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/delLang"
+                    android:layout_height="wrap_content"
+                    android:hint="Language"
+                    android:inputType="text" />
+                <EditText
+                    android:id="@+id/langLevel"
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/langName"
+                    android:layout_height="wrap_content"
+                    android:hint="Level"
+                    android:inputType="text" />
+            </RelativeLayout>
+            <Button
+                android:id="@+id/addlang"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="left|end"
+                android:onClick="onAddLang"
+                android:background="@drawable/ic_add"
+                />
+        </LinearLayout>
 
         <TextView
             android:textSize="20sp"
@@ -487,12 +544,11 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
-                android:layout_gravity="right|end"
+                android:layout_gravity="left|end"
                 android:onClick="onAddPro"
                 android:background="@drawable/ic_add"
                 />
         </LinearLayout>
-
 
 
 

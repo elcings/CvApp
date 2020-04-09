@@ -1,11 +1,8 @@
-package com.elchinaliyev.test;
+package com.elchinaliyev.test.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
@@ -18,52 +15,49 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.elchinaliyev.test.Model.Certificate;
-import com.elchinaliyev.test.Model.Common;
+import com.elchinaliyev.test.Common.Common;
 import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.Model.ContactWithDetail;
 import com.elchinaliyev.test.Model.Education;
 import com.elchinaliyev.test.Model.Experiance;
+import com.elchinaliyev.test.Model.Language;
 import com.elchinaliyev.test.Model.Project;
 import com.elchinaliyev.test.Model.Skills;
+import com.elchinaliyev.test.R;
 import com.elchinaliyev.test.Report.CV;
 import com.elchinaliyev.test.ViewModel.CvViewModel;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class CvAddActivity extends AppCompatActivity {
+public class CvAddActivity extends AppCompatActivity  {
 
-    Button loadImage, saveBtn;
+    Button loadImage;
     DatePickerDialog picker;
     private LinearLayout parentSkillLayout, parentEduLayout, parentExperLayout, parentCertLayout, parentLangLayout, parentProjectLayout;
     ImageView image;
@@ -71,11 +65,14 @@ public class CvAddActivity extends AppCompatActivity {
     EditText univertsity, location, graduatedYear, speciality;
     EditText skillName;
     EditText position, company, compLocation, startDate, endDate;
-    EditText certName, projectName;
+    EditText certName, projectName,langName,langLevel;
+    Spinner spinner;
     CheckBox isWork;
     private static int RESULT_LOAD_IMAGE = 1;
     CvViewModel cvViewModel;
     Common common;
+    Contact contact;
+    ContactWithDetail cont;
 
 
     @Override
@@ -84,12 +81,22 @@ public class CvAddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cv_add);
         init();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear);
+        long id = getIntent().getLongExtra("contactId",0);
+        if (id != 0) {
+            cont = cvViewModel.getContactWithDetail(id);
+            setContact(cont);
+            setSkills(parentSkillLayout,cont);
+            setCert(parentCertLayout,cont);
+            setEdu(parentEduLayout,cont);
+            setExper(parentExperLayout,cont);
+            setProject(parentProjectLayout,cont);
+            setLangs(parentLangLayout,cont);
+        }
 
     }
 
 
-    void createCv(int contactId, String path) {
-        ContactWithDetail contact = cvViewModel.getContactWithDetail(contactId);
+    void createCv(ContactWithDetail contact) {
         String fileName = contact.contact.getPath();
         try {
             String output = Environment.getExternalStorageDirectory() + "/" + fileName;
@@ -120,19 +127,16 @@ public class CvAddActivity extends AppCompatActivity {
     }
 
     protected void saveData() {
-        Contact contact = getContact();
-        cvViewModel.saveCon(contact);
-        List<Skills> skillList = getSkills(parentSkillLayout);
-        cvViewModel.saveSkill(skillList);
-        List<Education> eduList = getEducation(parentEduLayout);
-        cvViewModel.saveEdu(eduList);
-        List<Experiance> experList = getEperience(parentExperLayout);
-        cvViewModel.saveEper(experList);
-        List<Project> projects = getProject(parentProjectLayout);
-        cvViewModel.saveProjects(projects);
-        List<Certificate> certs = getCertificate(parentCertLayout);
-        cvViewModel.saveCert(certs);
-        createCv(skillList.get(0).getContactId(), contact.getPath());
+        ContactWithDetail detail=new ContactWithDetail();
+        detail.contact=getContact();
+        detail.skills=getSkills(parentSkillLayout);
+        detail.experiances=getEperience(parentExperLayout);
+        detail.educations=getEducation(parentEduLayout);
+        detail.projects=getProject(parentProjectLayout);
+        detail.certs=getCertificate(parentCertLayout);
+        detail.languages=getLang(parentLangLayout);
+        cvViewModel.insert(detail);
+        createCv(detail);
         Toast.makeText(CvAddActivity.this, "Success", Toast.LENGTH_LONG).show();
         finish();
     }
@@ -175,6 +179,7 @@ public class CvAddActivity extends AppCompatActivity {
     }
 
     public void init() {
+        contact=new Contact();
         common = new Common();
         cvViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModel.class);
         loadImage = findViewById(R.id.loadImage);
@@ -222,8 +227,12 @@ public class CvAddActivity extends AppCompatActivity {
         //projects
         parentProjectLayout = findViewById(R.id.parent_pro_layout);
         projectName = findViewById(R.id.projectName);
-    }
 
+        //language
+        parentLangLayout=findViewById(R.id.parent_lang_layout);
+        langName=findViewById(R.id.langName);
+        langLevel=findViewById(R.id.langLevel);
+    }
 
     public void onBirtdDate(View v) {
         final Calendar cld = Calendar.getInstance();
@@ -240,7 +249,6 @@ public class CvAddActivity extends AppCompatActivity {
                 }, year, month, day);
         picker.show();
     }
-
 
     //skill clicks
     public void onAddSkill(View v) {
@@ -263,7 +271,6 @@ public class CvAddActivity extends AppCompatActivity {
             skillName.requestFocus();
         }
     }
-
 
     //Education clicks
     public void onDelEdu(View v) {
@@ -397,30 +404,104 @@ public class CvAddActivity extends AppCompatActivity {
     }
 
 
+    //language
+
+    public void onDelLang(View v) {
+        parentLangLayout.removeView((View) v.getParent());
+    }
+
+    public void onAddLang(View v) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View rowView = inflater.inflate(R.layout.language, null);
+        parentLangLayout.addView(rowView, parentLangLayout.getChildCount() - 1);
+        langName = rowView.findViewById(R.id.langName);
+        langLevel = rowView.findViewById(R.id.langLevel);
+        langName.requestFocus();
+    }
+
+    public void expandLang(View v) {
+        if (parentLangLayout.getVisibility() == View.VISIBLE) {
+            parentLangLayout.setVisibility(View.GONE);
+        } else {
+            parentLangLayout.setVisibility(View.VISIBLE);
+            langName.requestFocus();
+
+        }
+    }
+
+
     public void onLoadImage(View v) {
         Intent imgIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(imgIntent, RESULT_LOAD_IMAGE);
     }
 
     //getAll
+    public List<Language> getLang(LinearLayout layout) {
+        List<Language> langs = new ArrayList<>();
+        for (int i = 0; i < layout.getChildCount() - 1; i++) {
+            Language lang = new Language();
+            View v = layout.getChildAt(i);
+            langName = v.findViewById(R.id.langName);
+            langLevel = v.findViewById(R.id.langLevel);
+            lang.setName(langName.getText().toString());
+            lang.setLevel(langLevel.getText().toString());
+            langs.add(lang);
+        }
+        return langs;
+    }
+
+    public void setLangs(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.languages.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.language, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                langName = rowView.findViewById(R.id.langName);
+                langLevel = rowView.findViewById(R.id.langLevel);
+                langName.setText(con.languages.get(i).getName());
+                langLevel.setText(con.languages.get(i).getLevel());
+            } else {
+                View rowView = layout.getChildAt(i);
+                langName = rowView.findViewById(R.id.langName);
+                langLevel = rowView.findViewById(R.id.langLevel);
+                langName.setText(con.languages.get(i).getName());
+                langLevel.setText(con.languages.get(i).getLevel());;
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
 
 
     public List<Skills> getSkills(LinearLayout layout) {
-        int contactId = cvViewModel.getConId();
         List<Skills> skills = new ArrayList<>();
         for (int i = 0; i < layout.getChildCount() - 1; i++) {
             Skills skillNam = new Skills();
             View v = layout.getChildAt(i);
             skillName = v.findViewById(R.id.skillName);
             skillNam.setName(skillName.getText().toString());
-            skillNam.setContactId(contactId);
             skills.add(skillNam);
         }
         return skills;
     }
 
+    public void setSkills(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.skills.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.skill, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                skillName = rowView.findViewById(R.id.skillName);
+                skillName.setText(con.skills.get(i).getName());
+            } else {
+                View v = layout.getChildAt(i);
+                skillName = v.findViewById(R.id.skillName);
+                skillName.setText(con.skills.get(i).getName());
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
+
     public List<Education> getEducation(LinearLayout layout) {
-        int contactId = cvViewModel.getConId();
         List<Education> edu = new ArrayList<>();
         for (int i = 0; i < layout.getChildCount() - 1; i++) {
             Education education = new Education();
@@ -433,15 +514,41 @@ public class CvAddActivity extends AppCompatActivity {
             education.setLocation(location.getText().toString());
             education.setUniversity(univertsity.getText().toString());
             education.setEndDate(graduatedYear.getText().toString());
-            education.setContactId(contactId);
             edu.add(education);
         }
         return edu;
     }
 
+    public void setEdu(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.educations.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.education, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                location = rowView.findViewById(R.id.location);
+                speciality = rowView.findViewById(R.id.specialty);
+                univertsity =rowView.findViewById(R.id.university);
+                graduatedYear = rowView.findViewById(R.id.graduated);
+                location.setText(con.educations.get(i).getLocation());
+                speciality.setText(con.educations.get(i).getSpecialty());
+                univertsity.setText(con.educations.get(i).getUniversity());
+                graduatedYear.setText(con.educations.get(i).getEndDate());
+            } else {
+                View rowView= layout.getChildAt(i);
+                location = rowView.findViewById(R.id.location);
+                speciality = rowView.findViewById(R.id.specialty);
+                univertsity =rowView.findViewById(R.id.university);
+                graduatedYear = rowView.findViewById(R.id.graduated);
+                location.setText(con.educations.get(i).getLocation());
+                speciality.setText(con.educations.get(i).getSpecialty());
+                univertsity.setText(con.educations.get(i).getUniversity());
+                graduatedYear.setText(con.educations.get(i).getEndDate());
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
 
     public List<Experiance> getEperience(LinearLayout layout) {
-        int contactId = cvViewModel.getConId();
         List<Experiance> eper = new ArrayList<>();
         for (int i = 0; i < layout.getChildCount() - 1; i++) {
             Experiance experiance = new Experiance();
@@ -458,43 +565,109 @@ public class CvAddActivity extends AppCompatActivity {
             experiance.setStartDate(startDate.getText().toString());
             experiance.setEndDate(endDate.getText().toString());
             experiance.setWork(isWork.isChecked());
-            experiance.setContactId(contactId);
             eper.add(experiance);
         }
         return eper;
     }
 
+    public void setExper(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.experiances.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.experience, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                position = rowView.findViewById(R.id.title_position);
+                company = rowView.findViewById(R.id.company);
+                compLocation =rowView.findViewById(R.id.comp_location);
+                startDate = rowView.findViewById(R.id.workStartDate);
+                endDate = rowView.findViewById(R.id.workEndDate);
+                isWork = rowView.findViewById(R.id.isWork);
+
+                position.setText(con.experiances.get(i).getPosition());
+                company.setText(con.experiances.get(i).getCompany());
+                compLocation.setText(con.experiances.get(i).getLocation());
+                startDate.setText(con.experiances.get(i).getStartDate());
+                endDate.setText(con.experiances.get(i).getEndDate());
+                isWork.setChecked(con.experiances.get(i).isWork());
+            } else {
+                View rowView= layout.getChildAt(i);
+                position = rowView.findViewById(R.id.title_position);
+                company = rowView.findViewById(R.id.company);
+                compLocation =rowView.findViewById(R.id.comp_location);
+                startDate = rowView.findViewById(R.id.workStartDate);
+                endDate = rowView.findViewById(R.id.workEndDate);
+                isWork = rowView.findViewById(R.id.isWork);
+
+                position.setText(con.experiances.get(i).getPosition());
+                company.setText(con.experiances.get(i).getCompany());
+                compLocation.setText(con.experiances.get(i).getLocation());
+                startDate.setText(con.experiances.get(i).getStartDate());
+                endDate.setText(con.experiances.get(i).getEndDate());
+                isWork.setChecked(con.experiances.get(i).isWork());
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
+
     public List<Project> getProject(LinearLayout layout) {
-        int contactId = cvViewModel.getConId();
         List<Project> projects = new ArrayList<>();
         for (int i = 0; i < layout.getChildCount() - 1; i++) {
             Project pro = new Project();
             View v = layout.getChildAt(i);
             projectName = v.findViewById(R.id.projectName);
             pro.setName(projectName.getText().toString());
-            pro.setContactId(contactId);
             projects.add(pro);
         }
         return projects;
     }
 
+    public void setProject(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.experiances.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.projects, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                projectName = rowView.findViewById(R.id.projectName);
+                projectName.setText(con.projects.get(i).getName());
+            } else {
+                View v = layout.getChildAt(i);
+                projectName = v.findViewById(R.id.projectName);
+                projectName.setText(con.skills.get(i).getName());
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
 
     public List<Certificate> getCertificate(LinearLayout layout) {
-        int contactId = cvViewModel.getConId();
         List<Certificate> certs = new ArrayList<>();
         for (int i = 0; i < layout.getChildCount() - 1; i++) {
             Certificate cert = new Certificate();
             View v = layout.getChildAt(i);
             certName = v.findViewById(R.id.certName);
             cert.setName(certName.getText().toString());
-            cert.setContactId(contactId);
             certs.add(cert);
         }
         return certs;
     }
 
+    public void setCert(LinearLayout layout,ContactWithDetail con) {
+        for (int i = 0; i < con.certs.size(); i++) {
+            if (i != 0) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.certificate, null);
+                layout.addView(rowView, layout.getChildCount() - 1);
+                certName = rowView.findViewById(R.id.certName);
+                certName.setText(con.certs.get(i).getName());
+            } else {
+                View v = layout.getChildAt(i);
+                certName = v.findViewById(R.id.certName);
+                certName.setText(con.certs.get(i).getName());
+            }
+        }
+        layout.setVisibility(View.VISIBLE);
+    }
+
     public Contact getContact() {
-        Contact contact = new Contact();
         contact.setFirstName(firstName.getText().toString());
         contact.setLastName(lastName.getText().toString());
         contact.setAddress(address.getText().toString());
@@ -504,10 +677,27 @@ public class CvAddActivity extends AppCompatActivity {
         contact.setBirthDate(birthDate.getText().toString());
         contact.setSosialMedia(sosialMedia.getText().toString());
         contact.setNationality(nationality.getText().toString());
-        contact.setSosialMedia(sosialMedia.getText().toString());
         contact.setOccupation(occupation.getText().toString());
         contact.setPath(email.getText().toString() + ".pdf");
         contact.setImage(common.ImageToByte(image, 120, 140));
         return contact;
     }
+
+    public void setContact(ContactWithDetail con) {
+        contact.setId(cont.contact.getId());
+        firstName.setText(cont.contact.getFirstName());
+        lastName.setText(cont.contact.getLastName());
+        address.setText(cont.contact.getAddress());
+        phone.setText(cont.contact.getPhone());
+        email.setText(cont.contact.getEmail());
+        description.setText(cont.contact.getDescription());
+        birthDate.setText(cont.contact.getBirthDate());
+        sosialMedia.setText(cont.contact.getSosialMedia());
+        nationality.setText(cont.contact.getNationality());
+        occupation.setText(cont.contact.getOccupation());
+        image.setImageBitmap(common.ConvertByteToBitmap(cont.contact.getImage()));
+    }
+
+
+
 }

@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
 public class Contact {
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    private int id;
+    private long id;
     private byte[]image;
     private String firstName;
     private String lastName;
@@ -30,11 +30,11 @@ public class Contact {
     }
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public String getPath() {

@@ -17,7 +17,7 @@
     <EditText
         android:id="@+id/title_position"
         android:layout_width="match_parent"
-        android:layout_below="@+id/delEdu"
+        android:layout_below="@+id/delExper"
         android:layout_height="wrap_content"
         android:hint="Titles/Position"
         android:inputType="text" />

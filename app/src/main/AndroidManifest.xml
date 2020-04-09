@@ -11,12 +11,12 @@
         android:roundIcon="@drawable/app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PdfActivity"></activity>
+        <activity android:name=".Activity.PdfActivity"></activity>
         <activity
-            android:name=".CvAddActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".Activity.CvAddActivity"
+            android:parentActivityName=".Activity.MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

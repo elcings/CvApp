@@ -1,15 +1,11 @@
 package com.elchinaliyev.test.Adapter;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +15,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.elchinaliyev.test.Model.Contact;
-import com.elchinaliyev.test.PdfActivity;
+import com.elchinaliyev.test.Activity.PdfActivity;
 import com.elchinaliyev.test.R;
 
 import java.io.File;
@@ -27,17 +23,17 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CvAdapter extends RecyclerView.Adapter<CvAdapter.ViewHolder> {
 
     Context context;
     private List<Contact>list;
-
-    public CvAdapter(Context context,List<Contact> list) {
+    OnContactListener listener;
+    public CvAdapter(Context context,List<Contact> list,OnContactListener listener) {
         this.context=context;
         this.list = list;
+        this.listener=listener;
     }
 
     @NonNull
@@ -45,7 +41,7 @@ public class CvAdapter extends RecyclerView.Adapter<CvAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater=LayoutInflater.from(parent.getContext());
         View view  =inflater.inflate(R.layout.row_item,parent,false);
-        return new ViewHolder(view);
+        return new ViewHolder(view,listener);
     }
 
     @Override
@@ -119,18 +115,29 @@ public class CvAdapter extends RecyclerView.Adapter<CvAdapter.ViewHolder> {
     }
 
 
-
-    class ViewHolder extends RecyclerView.ViewHolder
-    {
-        TextView fullName,occupation,digit;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView fullName, occupation, digit;
         ImageView imageView;
+        OnContactListener listener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnContactListener listener) {
             super(itemView);
-            fullName=itemView.findViewById(R.id.fullName);
-            occupation=itemView.findViewById(R.id.occup);
-            digit=itemView.findViewById(R.id.optionDigit);
-            imageView=itemView.findViewById(R.id.personImage);
+            fullName = itemView.findViewById(R.id.fullName);
+            occupation = itemView.findViewById(R.id.occup);
+            digit = itemView.findViewById(R.id.optionDigit);
+            imageView = itemView.findViewById(R.id.personImage);
+            this.listener = listener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            listener.OnContactClick(getAdapterPosition());
+        }
+    }
+
+   public interface OnContactListener
+    {
+        void OnContactClick(int position);
     }
 }

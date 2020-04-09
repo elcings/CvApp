@@ -1,4 +1,4 @@
-package com.elchinaliyev.test;
+package com.elchinaliyev.test.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
+import com.elchinaliyev.test.R;
 import com.github.barteksc.pdfviewer.PDFView;
 
 import java.io.File;

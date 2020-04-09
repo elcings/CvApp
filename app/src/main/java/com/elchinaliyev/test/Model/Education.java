@@ -3,18 +3,26 @@ package com.elchinaliyev.test.Model;
 import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import static androidx.room.ForeignKey.CASCADE;
 
 
-
-@Entity(tableName = "education")
+@Entity(tableName = "education",
+        foreignKeys = @ForeignKey(
+                entity = Contact.class,
+                parentColumns = "id",
+                childColumns = "contactId",
+                onDelete = CASCADE),
+        indices = @Index("contactId"))
 public class Education {
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    private int id;
+    private long id;
 
-    private int contactId;
+    private long contactId;
     private String specialty;
     private String university;
     private String location;
@@ -23,18 +31,18 @@ public class Education {
     public Education() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
-    public int getContactId() {
+    public long getContactId() {
         return contactId;
     }
 
-    public void setContactId(int contactId) {
+    public void setContactId(long contactId) {
         this.contactId = contactId;
     }
 

@@ -1,34 +1,42 @@
 package com.elchinaliyev.test.Model;
 
 import androidx.annotation.NonNull;
-import androidx.room.PrimaryKey;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.Entity;
+import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(tableName = "certificate")
+@Entity(tableName = "certificate",
+        foreignKeys = @ForeignKey(
+        entity = Contact.class,
+        parentColumns = "id",
+        childColumns = "contactId",
+        onDelete = CASCADE),
+        indices = @Index("contactId"))
 public class Certificate {
     @NonNull
     @PrimaryKey(autoGenerate = true)
-    private int id;
-    private int contactId;
+    private long id;
+    private long contactId;
     private String name;
 
     public Certificate() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getContactId() {
+    public long getContactId() {
         return contactId;
     }
 
-    public void setContactId(int contactId) {
+    public void setContactId(long contactId) {
         this.contactId = contactId;
     }
 
