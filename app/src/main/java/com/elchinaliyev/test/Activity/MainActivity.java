@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements CvAdapter.OnConta
     @Override
     public void OnContactClick(int position) {
         Intent intent = new Intent(MainActivity.this, CvAddActivity.class);
-        Toast.makeText(MainActivity.this,position+"",Toast.LENGTH_SHORT).show();
         intent.putExtra("contactId",contactList.get(position).getId());
         startActivity(intent);
     }

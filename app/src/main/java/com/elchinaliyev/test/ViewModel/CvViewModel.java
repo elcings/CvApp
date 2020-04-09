@@ -2,15 +2,9 @@ package com.elchinaliyev.test.ViewModel;
 
 import android.app.Application;
 
-import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.Model.ContactWithDetail;
-import com.elchinaliyev.test.Model.Education;
-import com.elchinaliyev.test.Model.Experiance;
-import com.elchinaliyev.test.Model.Language;
-import com.elchinaliyev.test.Model.Project;
 import com.elchinaliyev.test.Repository.ContactRepository;
-import com.elchinaliyev.test.Model.Skills;
 
 import java.util.List;
 

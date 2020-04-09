@@ -7,6 +7,7 @@ import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.Model.ContactWithDetail;
 import com.elchinaliyev.test.Model.Education;
 import com.elchinaliyev.test.Model.Experiance;
+import com.elchinaliyev.test.Model.Language;
 import com.elchinaliyev.test.Model.Project;
 import com.elchinaliyev.test.Model.Skills;
 import com.itextpdf.text.BadElementException;
@@ -78,6 +79,7 @@ public class CV extends BaseReport {
             PdfPCell cellExper = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
             cellExper.setBorder(2);
             cellExper.setPaddingLeft(0);
+            cellExper.setPaddingTop(20);
             cellExper.setPaddingBottom(8);
             PdfPTable tabExper = new PdfPTable(2);
             tabExper.setWidths(new int[]{100, 150});
@@ -115,7 +117,7 @@ public class CV extends BaseReport {
             PdfPCell cellEdu = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
             cellEdu.setBorder(2);
             cellEdu.setPaddingBottom(8);
-            cellEdu.setPaddingLeft(0);
+            cellEdu.setPaddingLeft(0);cellEdu.setPaddingTop(20);
             PdfPTable tabEdu = new PdfPTable(2);
             tabEdu.setWidths(new int[]{100, 150});
             tabEdu.setWidthPercentage(100);
@@ -145,6 +147,7 @@ public class CV extends BaseReport {
             PdfPCell cellCert = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
             cellCert.setBorder(2);
             cellCert.setPaddingBottom(8);
+            cellCert.setPaddingTop(20);
             cellCert.setPaddingLeft(0);
             PdfPTable tabCert = new PdfPTable(1);
             tabCert.setWidths(new int[]{250});
@@ -172,6 +175,7 @@ public class CV extends BaseReport {
             PdfPCell cellPro = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
             cellPro.setPaddingBottom(8);
             cellPro.setPaddingLeft(0);
+            cellPro.setPaddingTop(20);
             PdfPTable tabPro = new PdfPTable(1);
             tabPro.setWidths(new int[]{250});
             tabPro.setWidthPercentage(100);
@@ -239,9 +243,11 @@ public class CV extends BaseReport {
             _cell.setPaddingBottom(10);
             _cell.setPaddingTop(20);
             tabLang.addCell(_cell);
-            _cell = GetDefaultCell(GetDefaultParagraph("\nEnglish", "\nIntermediate"), 1, 1);
-            _cell.setPaddingBottom(20);
-            tabLang.addCell(_cell);
+            for (Language lang:all.languages) {
+                _cell = GetDefaultCell(GetDefaultParagraph("\n"+lang.getName(), "\n"+lang.getLevel()), 1, 1);
+                tabLang.addCell(_cell);
+            }
+
             celLeft.addElement(tabLang);
 
 

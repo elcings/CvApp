@@ -2,6 +2,7 @@ package com.elchinaliyev.test.Activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -14,6 +15,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
@@ -81,21 +85,26 @@ public class CvAddActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_cv_add);
         init();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear);
-        long id = getIntent().getLongExtra("contactId",0);
+        long id = getIntent().getLongExtra("contactId", 0);
         if (id != 0) {
             cont = cvViewModel.getContactWithDetail(id);
-            setContact(cont);
-            setSkills(parentSkillLayout,cont);
-            setCert(parentCertLayout,cont);
-            setEdu(parentEduLayout,cont);
-            setExper(parentExperLayout,cont);
-            setProject(parentProjectLayout,cont);
-            setLangs(parentLangLayout,cont);
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    setContact(cont);
+                    setSkills(parentSkillLayout,cont);
+                    setCert(parentCertLayout,cont);
+                    setEdu(parentEduLayout,cont);
+                    setExper(parentExperLayout,cont);
+                    setProject(parentProjectLayout,cont);
+                    setLangs(parentLangLayout,cont);
+
+                }
+            });
         }
-
     }
-
-
     void createCv(ContactWithDetail contact) {
         String fileName = contact.contact.getPath();
         try {
@@ -449,7 +458,6 @@ public class CvAddActivity extends AppCompatActivity  {
         }
         return langs;
     }
-
     public void setLangs(LinearLayout layout,ContactWithDetail con) {
         for (int i = 0; i < con.languages.size(); i++) {
             if (i != 0) {
@@ -520,6 +528,7 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void setEdu(LinearLayout layout,ContactWithDetail con) {
+
         for (int i = 0; i < con.educations.size(); i++) {
             if (i != 0) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -527,17 +536,17 @@ public class CvAddActivity extends AppCompatActivity  {
                 layout.addView(rowView, layout.getChildCount() - 1);
                 location = rowView.findViewById(R.id.location);
                 speciality = rowView.findViewById(R.id.specialty);
-                univertsity =rowView.findViewById(R.id.university);
+                univertsity = rowView.findViewById(R.id.university);
                 graduatedYear = rowView.findViewById(R.id.graduated);
                 location.setText(con.educations.get(i).getLocation());
                 speciality.setText(con.educations.get(i).getSpecialty());
                 univertsity.setText(con.educations.get(i).getUniversity());
                 graduatedYear.setText(con.educations.get(i).getEndDate());
             } else {
-                View rowView= layout.getChildAt(i);
+                View rowView = layout.getChildAt(i);
                 location = rowView.findViewById(R.id.location);
                 speciality = rowView.findViewById(R.id.specialty);
-                univertsity =rowView.findViewById(R.id.university);
+                univertsity = rowView.findViewById(R.id.university);
                 graduatedYear = rowView.findViewById(R.id.graduated);
                 location.setText(con.educations.get(i).getLocation());
                 speciality.setText(con.educations.get(i).getSpecialty());
@@ -546,6 +555,8 @@ public class CvAddActivity extends AppCompatActivity  {
             }
         }
         layout.setVisibility(View.VISIBLE);
+
+
     }
 
     public List<Experiance> getEperience(LinearLayout layout) {
@@ -622,7 +633,7 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void setProject(LinearLayout layout,ContactWithDetail con) {
-        for (int i = 0; i < con.experiances.size(); i++) {
+        for (int i = 0; i < con.projects.size(); i++) {
             if (i != 0) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View rowView = inflater.inflate(R.layout.projects, null);
