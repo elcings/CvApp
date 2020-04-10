@@ -6,7 +6,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.ImageView;
 import java.io.ByteArrayOutputStream;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Common {
@@ -20,6 +21,11 @@ public class Common {
     }
     public Bitmap ConvertByteToBitmap(byte[]image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+    public String convertDate(String dat)
+    {
+        SimpleDateFormat format = new SimpleDateFormat("MMM yyyy");
+        return  format.format(Date.parse(dat));
     }
 
 }

@@ -643,7 +643,7 @@ public class CvAddActivity extends AppCompatActivity  {
             } else {
                 View v = layout.getChildAt(i);
                 projectName = v.findViewById(R.id.projectName);
-                projectName.setText(con.skills.get(i).getName());
+                projectName.setText(con.projects.get(i).getName());
             }
         }
         layout.setVisibility(View.VISIBLE);
@@ -690,7 +690,7 @@ public class CvAddActivity extends AppCompatActivity  {
         contact.setNationality(nationality.getText().toString());
         contact.setOccupation(occupation.getText().toString());
         contact.setPath(email.getText().toString() + ".pdf");
-        contact.setImage(common.ImageToByte(image, 120, 140));
+        contact.setImage(common.ImageToByte(image, 130, 160));
         return contact;
     }
 
