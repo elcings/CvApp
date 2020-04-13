@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -15,28 +14,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.text.InputType;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Common.Common;
 import com.elchinaliyev.test.Model.Contact;
@@ -49,34 +42,35 @@ import com.elchinaliyev.test.Model.Skills;
 import com.elchinaliyev.test.R;
 import com.elchinaliyev.test.Report.CV;
 import com.elchinaliyev.test.ViewModel.CvViewModel;
+import com.elchinaliyev.test.ViewModel.CvViewModelList;
 import com.itextpdf.text.DocumentException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class CvAddActivity extends AppCompatActivity  {
+public class CvAddActivity extends AppCompatActivity {
 
     Button loadImage;
     DatePickerDialog picker;
-    private LinearLayout parentSkillLayout, parentEduLayout, parentExperLayout, parentCertLayout, parentLangLayout, parentProjectLayout;
+    private LinearLayout parentSkillLayout, parentEduLayout,
+            parentExperLayout, parentCertLayout, parentLangLayout, parentProjectLayout;
+    EditText birthDate, firstName, lastName, address, phone, nationality,
+            description, occupation, email, sosialMedia;
+    EditText univertsity, location, graduatedYear, speciality,skillName;
     ImageView image;
-    EditText birthDate, firstName, lastName, address, phone, nationality, description, occupation, email, sosialMedia;
-    EditText univertsity, location, graduatedYear, speciality;
-    EditText skillName;
-    EditText position, company, compLocation, startDate, endDate;
-    EditText certName, projectName,langName,langLevel;
-    Spinner spinner;
+    EditText position, company, compLocation, startDate, endDate,certName, projectName,langName,langLevel;
     CheckBox isWork;
     private static int RESULT_LOAD_IMAGE = 1;
     CvViewModel cvViewModel;
+    CvViewModelList cvViewModelList;
     Common common;
     Contact contact;
     ContactWithDetail cont;
+    ProgressBar bar;
+
 
 
     @Override
@@ -87,23 +81,31 @@ public class CvAddActivity extends AppCompatActivity  {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear);
         long id = getIntent().getLongExtra("contactId", 0);
         if (id != 0) {
-            cont = cvViewModel.getContactWithDetail(id);
-            runOnUiThread(new Runnable() {
-
+            cvViewModelList.getContactWithDetailById(id).observe(this, new Observer<ContactWithDetail>() {
                 @Override
-                public void run() {
-
-                    setContact(cont);
-                    setSkills(parentSkillLayout,cont);
-                    setCert(parentCertLayout,cont);
-                    setEdu(parentEduLayout,cont);
-                    setExper(parentExperLayout,cont);
-                    setProject(parentProjectLayout,cont);
-                    setLangs(parentLangLayout,cont);
-
+                public void onChanged(ContactWithDetail detail) {
+                    cont=detail;
+                    setContact(detail);
+                    setSkills(parentSkillLayout,detail);
+                    setCert(parentCertLayout,detail);
+                    setEdu(parentEduLayout,detail);
+                    setExper(parentExperLayout,detail);
+                    setProject(parentProjectLayout,detail);
+                    setLangs(parentLangLayout,detail);
                 }
             });
         }
+        cvViewModel.getIsSave().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+              if(aBoolean) {
+                  bar.setVisibility(View.VISIBLE);
+              }
+              else {
+                  bar.setVisibility(View.GONE);
+              }
+            }
+        });
     }
     void createCv(ContactWithDetail contact) {
         String fileName = contact.contact.getPath();
@@ -141,10 +143,17 @@ public class CvAddActivity extends AppCompatActivity  {
         detail.skills=getSkills(parentSkillLayout);
         detail.experiances=getEperience(parentExperLayout);
         detail.educations=getEducation(parentEduLayout);
-        detail.projects=getProject(parentProjectLayout);
+        if(!projectName.getText().toString().isEmpty()) {
+            detail.projects = getProject(parentProjectLayout);
+        }
+        else {
+            projectName.requestFocus();
+            Toast.makeText(this,"Fill project",Toast.LENGTH_SHORT).show();
+            return;
+        }
         detail.certs=getCertificate(parentCertLayout);
         detail.languages=getLang(parentLangLayout);
-        cvViewModel.insert(detail);
+        cvViewModel.save(detail);
         createCv(detail);
         Toast.makeText(CvAddActivity.this, "Success", Toast.LENGTH_LONG).show();
         finish();
@@ -169,6 +178,7 @@ public class CvAddActivity extends AppCompatActivity  {
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -188,9 +198,11 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void init() {
+        bar=findViewById(R.id.progressBar);
         contact=new Contact();
         common = new Common();
         cvViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModel.class);
+        cvViewModelList=new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModelList.class);
         loadImage = findViewById(R.id.loadImage);
         image = findViewById(R.id.image);
         birthDate = findViewById(R.id.birthdate);
@@ -261,11 +273,17 @@ public class CvAddActivity extends AppCompatActivity  {
 
     //skill clicks
     public void onAddSkill(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.skill, null);
-        parentSkillLayout.addView(rowView, parentSkillLayout.getChildCount() - 1);
-        skillName = rowView.findViewById(R.id.skillName);
-        skillName.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.skill, null);
+                parentSkillLayout.addView(rowView, parentSkillLayout.getChildCount() - 1);
+                skillName = rowView.findViewById(R.id.skillName);
+                skillName.requestFocus();
+            }
+        });
+
     }
 
     public void onDelSkill(View v) {
@@ -273,12 +291,18 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void expandSkill(View v) {
-        if (parentSkillLayout.getVisibility() == View.VISIBLE) {
-            parentSkillLayout.setVisibility(View.GONE);
-        } else {
-            parentSkillLayout.setVisibility(View.VISIBLE);
-            skillName.requestFocus();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentSkillLayout.getVisibility() == View.VISIBLE) {
+                    parentSkillLayout.setVisibility(View.GONE);
+                } else {
+                    parentSkillLayout.setVisibility(View.VISIBLE);
+                    skillName.requestFocus();
+                }
+            }
+        });
+
     }
 
     //Education clicks
@@ -287,23 +311,35 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void onAddEdu(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.education, null);
-        parentEduLayout.addView(rowView, parentEduLayout.getChildCount() - 1);
-        location = rowView.findViewById(R.id.location);
-        speciality = rowView.findViewById(R.id.specialty);
-        univertsity = rowView.findViewById(R.id.university);
-        graduatedYear = rowView.findViewById(R.id.graduated);
-        speciality.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.education, null);
+                parentEduLayout.addView(rowView, parentEduLayout.getChildCount() - 1);
+                location = rowView.findViewById(R.id.location);
+                speciality = rowView.findViewById(R.id.specialty);
+                univertsity = rowView.findViewById(R.id.university);
+                graduatedYear = rowView.findViewById(R.id.graduated);
+                speciality.requestFocus();
+            }
+        });
+
     }
 
     public void expandEdu(View v) {
-        if (parentEduLayout.getVisibility() == View.VISIBLE) {
-            parentEduLayout.setVisibility(View.GONE);
-        } else {
-            parentEduLayout.setVisibility(View.VISIBLE);
-            speciality.requestFocus();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentEduLayout.getVisibility() == View.VISIBLE) {
+                    parentEduLayout.setVisibility(View.GONE);
+                } else {
+                    parentEduLayout.setVisibility(View.VISIBLE);
+                    speciality.requestFocus();
+                }
+            }
+        });
+
     }
 
     //Experience clicks
@@ -313,25 +349,37 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void onAddExper(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.experience, null);
-        parentExperLayout.addView(rowView, parentExperLayout.getChildCount() - 1);
-        position = rowView.findViewById(R.id.title_position);
-        company = rowView.findViewById(R.id.company);
-        compLocation = rowView.findViewById(R.id.comp_location);
-        startDate = rowView.findViewById(R.id.workStartDate);
-        endDate = rowView.findViewById(R.id.workEndDate);
-        isWork = rowView.findViewById(R.id.isWork);
-        position.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.experience, null);
+                parentExperLayout.addView(rowView, parentExperLayout.getChildCount() - 1);
+                position = rowView.findViewById(R.id.title_position);
+                company = rowView.findViewById(R.id.company);
+                compLocation = rowView.findViewById(R.id.comp_location);
+                startDate = rowView.findViewById(R.id.workStartDate);
+                endDate = rowView.findViewById(R.id.workEndDate);
+                isWork = rowView.findViewById(R.id.isWork);
+                position.requestFocus();
+            }
+        });
+
     }
 
     public void expandExper(View v) {
-        if (parentExperLayout.getVisibility() == View.VISIBLE) {
-            parentExperLayout.setVisibility(View.GONE);
-        } else {
-            parentExperLayout.setVisibility(View.VISIBLE);
-            position.requestFocus();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentExperLayout.getVisibility() == View.VISIBLE) {
+                    parentExperLayout.setVisibility(View.GONE);
+                } else {
+                    parentExperLayout.setVisibility(View.VISIBLE);
+                    position.requestFocus();
+                }
+            }
+        });
+
     }
 
     public void onWorkStartDate(View v) {
@@ -374,20 +422,31 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void onAddCert(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.certificate, null);
-        parentCertLayout.addView(rowView, parentCertLayout.getChildCount() - 1);
-        certName = rowView.findViewById(R.id.certName);
-        certName.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.certificate, null);
+                parentCertLayout.addView(rowView, parentCertLayout.getChildCount() - 1);
+                certName = rowView.findViewById(R.id.certName);
+                certName.requestFocus();
+            }
+        });
+
     }
 
     public void expandCert(View v) {
-        if (parentCertLayout.getVisibility() == View.VISIBLE) {
-            parentCertLayout.setVisibility(View.GONE);
-        } else {
-            parentCertLayout.setVisibility(View.VISIBLE);
-            certName.requestFocus();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentCertLayout.getVisibility() == View.VISIBLE) {
+                    parentCertLayout.setVisibility(View.GONE);
+                } else {
+                    parentCertLayout.setVisibility(View.VISIBLE);
+                    certName.requestFocus();
+                }
+            }
+        });
     }
 
     //Projects
@@ -396,20 +455,32 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void onAddPro(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.projects, null);
-        parentProjectLayout.addView(rowView, parentProjectLayout.getChildCount() - 1);
-        projectName = rowView.findViewById(R.id.projectName);
-        projectName.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.projects, null);
+                parentProjectLayout.addView(rowView, parentProjectLayout.getChildCount() - 1);
+                projectName = rowView.findViewById(R.id.projectName);
+                projectName.requestFocus();
+            }
+        });
+
     }
 
     public void expandPro(View v) {
-        if (parentProjectLayout.getVisibility() == View.VISIBLE) {
-            parentProjectLayout.setVisibility(View.GONE);
-        } else {
-            parentProjectLayout.setVisibility(View.VISIBLE);
-            projectName.requestFocus();
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentProjectLayout.getVisibility() == View.VISIBLE) {
+                    parentProjectLayout.setVisibility(View.GONE);
+                } else {
+                    parentProjectLayout.setVisibility(View.VISIBLE);
+                    projectName.requestFocus();
+                }
+            }
+        });
+
     }
 
 
@@ -420,22 +491,34 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public void onAddLang(View v) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView = inflater.inflate(R.layout.language, null);
-        parentLangLayout.addView(rowView, parentLangLayout.getChildCount() - 1);
-        langName = rowView.findViewById(R.id.langName);
-        langLevel = rowView.findViewById(R.id.langLevel);
-        langName.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.language, null);
+                parentLangLayout.addView(rowView, parentLangLayout.getChildCount() - 1);
+                langName = rowView.findViewById(R.id.langName);
+                langLevel = rowView.findViewById(R.id.langLevel);
+                langName.requestFocus();
+            }
+        });
+
     }
 
     public void expandLang(View v) {
-        if (parentLangLayout.getVisibility() == View.VISIBLE) {
-            parentLangLayout.setVisibility(View.GONE);
-        } else {
-            parentLangLayout.setVisibility(View.VISIBLE);
-            langName.requestFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentLangLayout.getVisibility() == View.VISIBLE) {
+                    parentLangLayout.setVisibility(View.GONE);
+                } else {
+                    parentLangLayout.setVisibility(View.VISIBLE);
+                    langName.requestFocus();
 
-        }
+                }
+            }
+        });
+
     }
 
 
@@ -679,6 +762,7 @@ public class CvAddActivity extends AppCompatActivity  {
     }
 
     public Contact getContact() {
+
         contact.setFirstName(firstName.getText().toString());
         contact.setLastName(lastName.getText().toString());
         contact.setAddress(address.getText().toString());
@@ -692,6 +776,7 @@ public class CvAddActivity extends AppCompatActivity  {
         contact.setPath(email.getText().toString() + ".pdf");
         contact.setImage(common.ImageToByte(image, 130, 160));
         return contact;
+
     }
 
     public void setContact(ContactWithDetail con) {
@@ -711,4 +796,8 @@ public class CvAddActivity extends AppCompatActivity  {
 
 
 
-}
+} /*if(!TextUtils.isEmpty(firstName.getText())&&TextUtils.isEmpty(lastName.getText())&&
+        TextUtils.isEmpty(address.getText())&&TextUtils.isEmpty(phone.getText())&&TextUtils.isEmpty(email.getText())&&
+        TextUtils.isEmpty(birthDate.getText())&&TextUtils.isEmpty(nationality.getText())&&TextUtils.isEmpty(occupation.getText())){
+        }*/
+

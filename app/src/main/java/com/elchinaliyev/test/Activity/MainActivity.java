@@ -21,6 +21,7 @@ import com.elchinaliyev.test.Common.Common;
 import com.elchinaliyev.test.Model.Contact;
 import com.elchinaliyev.test.R;
 import com.elchinaliyev.test.ViewModel.CvViewModel;
+import com.elchinaliyev.test.ViewModel.CvViewModelList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements CvAdapter.OnContactListener {
+    CvViewModelList cvViewModelList;
     CvViewModel cvViewModel;
     Common common;
     RecyclerView recView;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements CvAdapter.OnConta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        cvViewModel.getContacts().observe(this, new Observer<List<Contact>>() {
+        cvViewModelList.getContacts().observe(this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
                 for(Contact con:contacts) {
@@ -95,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements CvAdapter.OnConta
         recView.setLayoutManager(new LinearLayoutManager(this));
         recView.setItemAnimator(new DefaultItemAnimator());
         recView.setNestedScrollingEnabled(true);
-        cvViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModel.class);
+        cvViewModelList = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModelList.class);
+        cvViewModel=new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(CvViewModel.class);
     }
 
     private void setupRecyclerView() {

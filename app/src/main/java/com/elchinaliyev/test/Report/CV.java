@@ -1,6 +1,8 @@
 package com.elchinaliyev.test.Report;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.elchinaliyev.test.Common.Common;
 import com.elchinaliyev.test.Model.Certificate;
 import com.elchinaliyev.test.Model.ContactWithDetail;
@@ -95,13 +97,13 @@ public class CV extends BaseReport {
                     end = common.convertDate(exper.getEndDate());
                 }
                 //experPlaceDate
-                _cell = GetDefaultCell(GetDefaultParagraph(exper.getLocation(), "\n\n" + common.convertDate(exper.getStartDate()) + " - " + end), 1, 1);
+                _cell = GetDefaultCell(GetDefaultParagraph(exper.getLocation(), "\n" + common.convertDate(exper.getStartDate()) + " - " + end), 1, 1);
                 _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 _cell.setPaddingLeft(0);
                 tabExper.addCell(_cell);
 
                 //experPositionCompany
-                _cell = GetDefaultCell(GetDefaultParagraph(exper.getPosition(), "\n\n" + exper.getCompany()), 1, 1);
+                _cell = GetDefaultCell(GetDefaultParagraph(exper.getPosition(), "\n" + exper.getCompany()), 1, 1);
                 _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 _cell.setPaddingLeft(0);
                 tabExper.addCell(_cell);
@@ -141,54 +143,58 @@ public class CV extends BaseReport {
 
 
             //Certification&Courses
-            PdfPCell cellCert = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
-            cellCert.setBorder(2);
-            cellCert.setPaddingBottom(15);
-            cellCert.setPaddingTop(20);
-            cellCert.setPaddingLeft(0);
-            PdfPTable tabCert = new PdfPTable(1);
-            tabCert.setWidths(new int[]{250});
-            tabCert.setWidthPercentage(100);
-            PdfPCell cellCertHeader = GetDefaultCell(GetDefaultParagraph("Certifications & Courses\n\n", ""), 1, 1);
-            cellCertHeader.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cellCertHeader.setPaddingLeft(0);
-            tabCert.addCell(cellCertHeader);
+            if(all.certs!=null&&all.certs.size()>0) {
+                PdfPCell cellCert = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
+                cellCert.setBorder(2);
+                cellCert.setPaddingBottom(15);
+                cellCert.setPaddingTop(20);
+                cellCert.setPaddingLeft(0);
+                PdfPTable tabCert = new PdfPTable(1);
+                tabCert.setWidths(new int[]{250});
+                tabCert.setWidthPercentage(100);
+                PdfPCell cellCertHeader = GetDefaultCell(GetDefaultParagraph("Certifications & Courses\n\n", ""), 1, 1);
+                cellCertHeader.setHorizontalAlignment(Element.ALIGN_LEFT);
+                cellCertHeader.setPaddingLeft(0);
+                tabCert.addCell(cellCertHeader);
 
-            //Certification
-            for (Certificate cert : all.certs) {
-                _cell = GetDefaultCell(GetDefaultParagraph(cert.getName(), ""), 1, 1);
-                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-                _cell.setPaddingLeft(0);
-                tabCert.addCell(_cell);
+                //Certification
+                for (Certificate cert : all.certs) {
+                    _cell = GetDefaultCell(GetDefaultParagraph(cert.getName(), ""), 1, 1);
+                    _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                    _cell.setPaddingLeft(0);
+                    tabCert.addCell(_cell);
+                }
+
+                cellCert.addElement(tabCert);
+                tabName.addCell(cellCert);
             }
-
-            cellCert.addElement(tabCert);
-            tabName.addCell(cellCert);
 
 
             //Projects
-            PdfPCell cellPro = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
-            cellPro.setPaddingBottom(15);
-            cellPro.setPaddingLeft(0);
-            cellPro.setPaddingTop(20);
-            PdfPTable tabPro = new PdfPTable(1);
-            tabPro.setWidths(new int[]{250});
-            tabPro.setWidthPercentage(100);
-            PdfPCell cellProHeader = GetDefaultCell(GetDefaultParagraph("PROJECTS\n\n", ""), 1, 1);
-            cellProHeader.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cellProHeader.setPaddingLeft(0);
-            tabPro.addCell(cellProHeader);
+            if(all.projects!=null&& all.projects.size()>0) {
+                PdfPCell cellPro = GetDefaultCell(GetDefaultParagraph("", ""), 2, 1);
+                cellPro.setPaddingBottom(15);
+                cellPro.setPaddingLeft(0);
+                cellPro.setPaddingTop(20);
+                PdfPTable tabPro = new PdfPTable(1);
+                tabPro.setWidths(new int[]{250});
+                tabPro.setWidthPercentage(100);
+                PdfPCell cellProHeader = GetDefaultCell(GetDefaultParagraph("PROJECTS\n\n", ""), 1, 1);
+                cellProHeader.setHorizontalAlignment(Element.ALIGN_LEFT);
+                cellProHeader.setPaddingLeft(0);
+                tabPro.addCell(cellProHeader);
 
-            for (Project project : all.projects) {
-                _cell = GetDefaultCell(GetDefaultParagraph(project.getName(), ""), 1, 1);
-                _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-                _cell.setPaddingLeft(0);
-                tabPro.addCell(_cell);
+                for (Project project : all.projects) {
+                    _cell = GetDefaultCell(GetDefaultParagraph(project.getName(), ""), 1, 1);
+                    _cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                    _cell.setPaddingLeft(0);
+                    tabPro.addCell(_cell);
+                }
+                cellPro.addElement(tabPro);
+                tabName.addCell(cellPro);
+                _cell.addElement(tabName);
+                tab.addCell(_cell);
             }
-            cellPro.addElement(tabPro);
-            tabName.addCell(cellPro);
-            _cell.addElement(tabName);
-            tab.addCell(_cell);
 
 
             //Left

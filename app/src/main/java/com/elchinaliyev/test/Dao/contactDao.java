@@ -31,7 +31,7 @@ public abstract class contactDao {
 
     @Transaction
     @Query("SELECT * FROM contact where id=:contactId")
-    public abstract ContactWithDetail getContactWithDetailById(long contactId);
+    public abstract LiveData<ContactWithDetail> getContactWithDetailById(long contactId);
 
     @Transaction
     @Query("SELECT * FROM contact")
@@ -99,30 +99,41 @@ public abstract class contactDao {
             deleteCert(detail.contact.getId());
             deleteLang(detail.contact.getId());
         }
-        for (Skills entity : detail.skills) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertSkill(entity);
+        if (detail.skills != null && detail.skills.size() > 0) {
+            for (Skills entity : detail.skills) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertSkill(entity);
+            }
         }
-        for (Certificate entity : detail.certs) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertCert(entity);
+        if (detail.certs != null && detail.certs.size() > 0) {
+            for (Certificate entity : detail.certs) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertCert(entity);
+            }
         }
-        for (Education entity : detail.educations) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertEdu(entity);
+        if (detail.educations != null && detail.educations.size() > 0) {
+            for (Education entity : detail.educations) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertEdu(entity);
+            }
         }
-        for (Experiance entity : detail.experiances) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertExper(entity);
+        if (detail.experiances != null && detail.experiances.size() > 0) {
+            for (Experiance entity : detail.experiances) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertExper(entity);
+            }
         }
-        for (Project entity : detail.projects) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertProject(entity);
+        if (detail.projects != null && detail.projects.size() > 0) {
+            for (Project entity : detail.projects) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertProject(entity);
+            }
         }
-        for (Language entity : detail.languages) {
-            entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
-            insertLang(entity);
+        if (detail.languages != null && detail.languages.size() > 0) {
+            for (Language entity : detail.languages) {
+                entity.setContactId(contactId != 0 ? contactId : detail.contact.getId());
+                insertLang(entity);
+            }
         }
     }
-
 }

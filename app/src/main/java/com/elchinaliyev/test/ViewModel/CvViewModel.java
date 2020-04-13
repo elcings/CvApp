@@ -11,31 +11,29 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 public class CvViewModel extends AndroidViewModel {
     private ContactRepository contactRepository;
-    private LiveData<List<Contact>> contactAll;
+    private MutableLiveData<Boolean> isSave=new MutableLiveData<>();
 
     public CvViewModel(@NonNull Application application) {
         super(application);
         contactRepository = new ContactRepository(application);
-        contactAll = contactRepository.getAllContacts();
     }
 
-    public ContactWithDetail getContactWithDetail(long contactId) {
-        return contactRepository.getContactWithDetail(contactId);
-    }
-
-    public LiveData<List<Contact>> getContacts() {
-        return contactAll;
-    }
-
-    public void insert(ContactWithDetail detail) {
+    public void save(ContactWithDetail detail) {
+        isSave.setValue(true);
         contactRepository.save(detail);
+       // isSave.setValue(false);
     }
 
     public void delete(Contact contact) {
         contactRepository.delete(contact);
+    }
+
+    public LiveData<Boolean>getIsSave() {
+        return isSave;
     }
 
 }
